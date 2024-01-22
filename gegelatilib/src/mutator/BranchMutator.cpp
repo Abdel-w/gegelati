@@ -38,7 +38,9 @@ void Mutator::BranchMutator::copyTeamAndEdges(
             }
             else if (dynamic_cast<const TPG::TPGAction*>(originalTeam) !=
                      nullptr) {
-                    vertexMap[originalTeam] = (TPG::TPGVertex*) targetGraph.findAction(((TPG::TPGAction*)originalTeam)->getActionID());
+                    vertexMap[originalTeam] = (TPG::TPGVertex*) targetGraph.findAction(
+                        ((TPG::TPGAction*)originalTeam)->getActionID());
+
             }
              
         }else {
@@ -53,9 +55,8 @@ void Mutator::BranchMutator::copyTeamAndEdges(
 }
 
 
-void Mutator::BranchMutator::copyEdge(
-    std::unique_ptr<TPG::TPGEdge>& originalEdge, TPG::TPGGraph& targetGraph,
-    std::unordered_map<const TPG::TPGVertex*, TPG::TPGVertex*>& vertexMap)
+void Mutator::BranchMutator::copyEdge(const std::unique_ptr<TPG::TPGEdge> &originalEdge,
+                      TPG::TPGGraph& targetGraph, std::unordered_map<const TPG::TPGVertex*,TPG::TPGVertex*>& vertexMap)
 {
     // Copy the destination team/action
     const TPG::TPGVertex* originalDestination = originalEdge->getDestination();

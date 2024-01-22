@@ -87,7 +87,7 @@ TEST_F(BranchMutatorTest, CopyBranch)
     a1_o = &originalGraph.addNewAction(1);               //            \ / 
     originalGraph.addNewEdge(*root_o, *team_o, progP0_o);//             0
     originalGraph.addNewEdge(*team_o, *a0_o, progP1_o);  //             |
-    originalGraph.addNewEdge(*team_o, *a0_o, progP2_o);  //             0              
+    originalGraph.addNewEdge(*team_o, *a1_o, progP2_o);  //             0              
 
 
     ASSERT_EQ(originalGraph.getNbVertices(), 4);
@@ -99,4 +99,11 @@ TEST_F(BranchMutatorTest, CopyBranch)
     ASSERT_EQ(targetGraph.getNbVertices(), 7);
     ASSERT_EQ(targetGraph.getNbRootVertices(), 2);
     ASSERT_EQ(targetGraph.getEdges().size(), 7);
+
+    ASSERT_EQ(a0_t->getIncomingEdges().size(), 2);
+    ASSERT_EQ(a1_t->getIncomingEdges().size(), 2);
+
+    ASSERT_EQ(a0_t->getOutgoingEdges().size(), 0);
+    ASSERT_EQ(a1_t->getOutgoingEdges().size(), 0);
+
 }

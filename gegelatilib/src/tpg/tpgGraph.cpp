@@ -326,14 +326,17 @@ void TPG::TPGGraph::clearProgramIntrons()
         edge.get()->getProgram().clearIntrons();
     }
 }
-/*
-TPG::TPGAction* TPG::TPGGraph::findAction(const uint64_t actionID){
-    return (TPG::TPGAction*)(*std::find(this->vertices.begin(), this->vertices.end(), [actionID](TPG::TPGVertex* vertex){
+
+TPG::TPGAction* TPG::TPGGraph::findAction(uint64_t actionID){
+    return (TPG::TPGAction*)(*std::find_if(this->vertices.begin(), this->vertices.end(), [actionID](TPG::TPGVertex* vertex){
         if (dynamic_cast<const TPG::TPGAction*>(vertex) !=
                      nullptr)
         {
             return actionID == ((TPG::TPGAction*)vertex)->getActionID();
         }
+        else {
+            return false;
+        }
         
     }));
-}*/
+}

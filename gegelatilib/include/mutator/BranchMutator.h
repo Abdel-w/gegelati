@@ -9,8 +9,20 @@ namespace Mutator {
     namespace BranchMutator {
 
         // Copy the branch from the original graph to the copied graph
-        TPG::TPGTeam& copyBranch(TPG::TPGGraph& originalGraph,
+        void copyBranch(TPG::TPGGraph& originalGraph,
                                  TPG::TPGGraph& targetGraph);
+
+         // Helper function to copy a TPG team and its outgoing edges recursively
+        void copyTeamAndEdges(TPG::TPGGraph& originalGraph,
+                              TPG::TPGGraph& targetGraph,
+                              std::unordered_map<const TPG::TPGVertex*,
+                                                 TPG::TPGVertex*>& vertexMap);
+
+        // Helper function to copy an outgoing edge
+        void copyEdge(const std::unique_ptr<TPG::TPGEdge> &originalEdge,
+                      TPG::TPGGraph& targetGraph,
+                      std::unordered_map<const TPG::TPGVertex*,
+                                         TPG::TPGVertex*>& vertexMap);
 
         /**
          * \brief Mutates a Branch by stochastically adding, deleting, and
@@ -40,7 +52,7 @@ namespace Mutator {
          *                process.
          * \param[in] params Probability parameters for the mutation.
          * \param[in] rng Random Number Generator used in the mutation process.
-         */
+         *
         void mutateBranch(
             TPG::TPGGraph& graph, const Archive& archive,
             const TPG::TPGTeam& root,
@@ -48,20 +60,7 @@ namespace Mutator {
             const std::vector<const TPG::TPGAction*>& preExistingActions,
             const std::list<const TPG::TPGEdge*>& preExistingEdges,
             std::list<std::shared_ptr<Program::Program>>& newPrograms,
-            const Mutator::MutationParameters& params, Mutator::RNG& rng);
-
-        // Helper function to copy a TPG team and its outgoing edges recursively
-        void copyTeamAndEdges(TPG::TPGGraph& originalGraph,
-                              TPG::TPGGraph& targetGraph,
-                              std::unordered_map<const TPG::TPGVertex*,
-                                                 TPG::TPGVertex*>& vertexMap);
-
-        // Helper function to copy an outgoing edge
-        void Mutator::BranchMutator::copyEdge(
-            std::unique_ptr<TPG::TPGEdge> originalEdge,
-            TPG::TPGGraph& targetGraph,
-            std::unordered_map<const TPG::TPGVertex*, TPG::TPGVertex*>&
-                vertexMap);
+            const Mutator::MutationParameters& params, Mutator::RNG& rng);*/
 
     };                                // namespace BranchMutator
 };                                    // namespace Mutator

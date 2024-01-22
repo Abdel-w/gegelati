@@ -11,7 +11,7 @@
 #include "mutator/tpgMutator.h"
 
 
-TPG::TPGVertex& Mutator::BranchMutator::copyBranch(TPG::TPGGraph& originalGraph,
+void Mutator::BranchMutator::copyBranch(TPG::TPGGraph& originalGraph,
                                         TPG::TPGGraph& targetGraph   )
 {
     // Map to keep track of the correspondence between original and copied
@@ -20,9 +20,6 @@ TPG::TPGVertex& Mutator::BranchMutator::copyBranch(TPG::TPGGraph& originalGraph,
 
     // Copy the root team and its outgoing edges
     copyTeamAndEdges(originalGraph, targetGraph, vertexMap);
-
-    //return the rootTeam of the copied branch
-    return (TPG::TPGVertex& ) *(originalGraph.getRootVertices().at(0));
 }
 
 
@@ -32,7 +29,7 @@ void Mutator::BranchMutator::copyTeamAndEdges(
 {
     //Copy originalGraph's TPGVertex into targetGraph 
     for (auto originalTeam : originalGraph.getVertices()) {
-        if (targetGraph.hasVertex(*originalTeam) == false) {
+        if (targetGraph.hasVertex(*originalTeam) == false) {//
             TPG::TPGVertex* copiedTeam;
             // Create a new Vertex (Team/Action)
             // (at the end of the vertices list)
@@ -52,14 +49,14 @@ void Mutator::BranchMutator::copyTeamAndEdges(
     }
 
     // Copy originalGraph's TPGEdges into targetGraph 
-    for (auto originalEdge : originalGraph.getEdges())         
+    for (auto &originalEdge : originalGraph.getEdges())         
         copyEdge(originalEdge, targetGraph, vertexMap);
 
 }
 
 
 void Mutator::BranchMutator::copyEdge(
-    std::unique_ptr<TPG::TPGEdge> originalEdge, TPG::TPGGraph& targetGraph,
+    const std::unique_ptr<TPG::TPGEdge> &originalEdge, TPG::TPGGraph& targetGraph,
     std::unordered_map<const TPG::TPGVertex*, TPG::TPGVertex*>& vertexMap)
 {
     // Copy the destination team/action
@@ -75,17 +72,7 @@ void Mutator::BranchMutator::copyEdge(
                            *copiedDestination, copiedProgram);
 }
 
-
-void Mutator::BranchMutator::mutateBranch(const Mutator::MutationParameters& params,
-                                 Mutator::RNG& rng)
-{
-    // Perform mutations on the copied branch
-    // You can use methods from the TPGMutator class or define new mutations
-    // based on your requirements.
-   // Mutator::TPGMutator::mutateTPGTeam(copiedGraph, Archive(), rootTeam, {}, {},
-    //                                   {}, {}, params, rng);
-    // Additional mutations as needed...
-}
+/*
 void Mutator::BranchMutator::mutateBranch(
     TPG::TPGGraph& graph, const Archive& archive, const TPG::TPGTeam& root,
     const std::vector<const TPG::TPGTeam*>& preExistingTeams,
@@ -94,5 +81,12 @@ void Mutator::BranchMutator::mutateBranch(
     std::list<std::shared_ptr<Program::Program>>& newPrograms,
     const Mutator::MutationParameters& params, Mutator::RNG& rng)
 {
+    // Perform mutations on the copied branch
+    // You can use methods from the TPGMutator class or define new mutations
+    // based on your requirements.
+    Mutator::TPGMutator::mutateTPGTeam(copiedGraph, Archive(), rootTeam, {}, {},
+                                       {}, {}, params, rng);
+    // Additional mutations as needed...
     
 }
+*/

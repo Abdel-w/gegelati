@@ -39,6 +39,7 @@
 #include <type_traits>
 
 #include "tpg/tpgGraph.h"
+#include "tpg/tpgAction.h"
 
 TPG::TPGGraph::~TPGGraph()
 {
@@ -324,4 +325,15 @@ void TPG::TPGGraph::clearProgramIntrons()
     for (auto& edge : this->edges) {
         edge.get()->getProgram().clearIntrons();
     }
+}
+
+TPG::TPGAction* TPG::TPGGraph::findAction(const uint64_t actionID){
+    return (TPG::TPGAction*)(*std::find(this->vertices.begin(), this->vertices.end(), [actionID](TPG::TPGVertex* vertex){
+        if (dynamic_cast<const TPG::TPGAction*>(vertex) !=
+                     nullptr)
+        {
+            return actionID == ((TPG::TPGAction*)vertex)->getActionID();
+        }
+        
+    }));
 }

@@ -301,6 +301,8 @@ namespace TPG {
          */
         void clearProgramIntrons();
 
+        TPGAction* findAction(const uint64_t actionID);
+
       protected:
         /// Environment of the TPGGraph
         const Environment& env;

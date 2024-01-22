@@ -90,7 +90,8 @@ TEST_F(BranchMutatorTest, CopyBranch)
     targetGraph.addNewEdge(*team_t, *a0_t, progP2_t);  //             0              
 
 
-    
+    ASSERT_EQ(originalGraph.getNbVertices(), 5);
+    ASSERT_EQ(targetGraph.getNbVertices(), 4);
 
     Mutator::BranchMutator::copyBranch(originalGraph, targetGraph);
 

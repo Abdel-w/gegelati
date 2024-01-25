@@ -34,39 +34,35 @@ void Mutator::BranchMutator::copyTeamAndEdges(
             // Create a new Vertex (Team/Action)
             // (at the end of the vertices list)
             if (dynamic_cast<const TPG::TPGTeam*>(originalTeam) != nullptr) {
-                    vertexMap[originalTeam] = (TPG::TPGVertex*) &targetGraph.addNewTeam();
+                vertexMap[originalTeam] =
+                    (TPG::TPGVertex*)&targetGraph.addNewTeam();
             }
             else if (dynamic_cast<const TPG::TPGAction*>(originalTeam) !=
-                     nullptr) {
-                    vertexMap[originalTeam] = (TPG::TPGVertex*) targetGraph.findAction(
-                        ((TPG::TPGAction*)originalTeam)->getActionID());
-
-            }
-             
+                     nullptr) {                  
+                    vertexMap[originalTeam] = 
+                        (TPG::TPGVertex*)(*targetGraph.findAction(
+                            ((TPG::TPGAction*)originalTeam)->getActionID()));
+            }       
         }else {
             vertexMap[originalTeam] = (TPG::TPGVertex*) originalTeam;
         }
     }
 
     // Copy originalGraph's TPGEdges into targetGraph 
-    for (auto &originalEdge : originalGraph.getEdges())         
-        copyEdge(originalEdge, targetGraph, vertexMap);
+    for (auto& originalEdge : originalGraph.getEdges()) {
+        // Copy the destination team/action
+        const TPG::TPGVertex* originalDestination =
+            originalEdge->getDestination();
+        TPG::TPGVertex* copiedDestination = vertexMap[originalDestination];
 
-}
+        // Copy the program
+        const Program::Program& originalProgram = originalEdge->getProgram();
+        auto copiedProgram = std::make_shared<Program::Program>(
+            Program::Program(originalProgram));
 
+        // Create the new edge
+        targetGraph.addNewEdge(*vertexMap[originalEdge->getSource()],
+                               *copiedDestination, copiedProgram);
+    }      
 
-void Mutator::BranchMutator::copyEdge(const std::unique_ptr<TPG::TPGEdge> &originalEdge,
-                      TPG::TPGGraph& targetGraph, std::unordered_map<const TPG::TPGVertex*,TPG::TPGVertex*>& vertexMap)
-{
-    // Copy the destination team/action
-    const TPG::TPGVertex* originalDestination = originalEdge->getDestination();
-    TPG::TPGVertex* copiedDestination = vertexMap[originalDestination];
-
-    // Copy the program
-    const Program::Program& originalProgram = originalEdge->getProgram();
-    auto copiedProgram= std::make_shared<Program::Program>(Program::Program(originalProgram));
-
-    // Create the new edge
-    targetGraph.addNewEdge(*vertexMap[originalEdge->getSource()],
-                           *copiedDestination, copiedProgram);
 }

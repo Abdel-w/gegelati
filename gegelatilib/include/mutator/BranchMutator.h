@@ -18,12 +18,5 @@ namespace Mutator {
                               std::unordered_map<const TPG::TPGVertex*,
                                                  TPG::TPGVertex*>& vertexMap);
 
-        // Helper function to copy an outgoing edge
-        void copyEdge(const std::unique_ptr<TPG::TPGEdge> &originalEdge,
-                      TPG::TPGGraph& targetGraph,
-                      std::unordered_map<const TPG::TPGVertex*,
-                                         TPG::TPGVertex*>& vertexMap);
-
-
     };                                // namespace BranchMutator
 };                                    // namespace Mutator

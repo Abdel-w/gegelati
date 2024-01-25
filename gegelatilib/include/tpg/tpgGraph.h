@@ -301,7 +301,7 @@ namespace TPG {
          */
         void clearProgramIntrons();
 
-        TPGAction* findAction(uint64_t actionID);
+        std::list<TPG::TPGVertex*>::iterator findAction(uint64_t actionID);
 
       protected:
         /// Environment of the TPGGraph

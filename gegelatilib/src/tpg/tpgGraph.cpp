@@ -327,16 +327,16 @@ void TPG::TPGGraph::clearProgramIntrons()
     }
 }
 
-TPG::TPGAction* TPG::TPGGraph::findAction(uint64_t actionID){
-    return (TPG::TPGAction*)(*std::find_if(this->vertices.begin(), this->vertices.end(), [actionID](TPG::TPGVertex* vertex){
-        if (dynamic_cast<const TPG::TPGAction*>(vertex) !=
-                     nullptr)
-        {
-            return actionID == ((TPG::TPGAction*)vertex)->getActionID();
-        }
-        else {
-            return false;
-        }
-        
-    }));
+std::list<TPG::TPGVertex*>::iterator TPG::TPGGraph::findAction(
+    uint64_t actionID)
+{
+    return std::find_if( this->vertices.begin(), this->vertices.end(),
+         [actionID](TPG::TPGVertex* vertex) {
+             if (dynamic_cast<const TPG::TPGAction*>(vertex) != nullptr) {
+                 return actionID == ((TPG::TPGAction*)vertex)->getActionID();
+             }
+             else {
+                 return false;
+             }
+         });             
 }

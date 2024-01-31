@@ -318,7 +318,7 @@ namespace Learn {
          * \param[in] printProgressBar select whether a progress bar will be
          * printed in the console. \return the number of completed generations.
          */
-        uint64_t train(volatile bool& altTraining, bool printProgressBar);
+        virtual uint64_t train(volatile bool& altTraining, bool printProgressBar);
 
         /**
          * \brief Update the bestRoot and resultsPerRoot attributes.

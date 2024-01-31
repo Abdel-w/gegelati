@@ -23,6 +23,21 @@ namespace Learn {
             : LearningAgent(le, iSet, p, factory)
         {
         }
+        /**
+         * \brief Train the TPGGraph for a given number of generation.
+         *
+         * The method trains the TPGGraph for a given number of generation,
+         * unless the referenced boolean value becomes false (evaluated at each
+         * generation).
+         * Optionally, a simple progress bar can be printed within the terminal.
+         * The TPGGraph is NOT (re)initialized before starting the training.
+         *
+         * \param[in] altTraining a reference to a boolean value that can be
+         * used to halt the training process before its completion.
+         * \param[in] printProgressBar select whether a progress bar will be
+         * printed in the console. \return the number of completed generations.
+         */
+        virtual uint64_t train(volatile bool& altTraining, bool printProgressBar,const TPG::TPGVertex* bestBranch);       
         
     };
 

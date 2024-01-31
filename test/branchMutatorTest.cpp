@@ -6,6 +6,7 @@
 #include "instructions/instruction.h"
 #include "file/tpgGraphDotExporter.h"
 #include <gtest/gtest.h>
+#include <unordered_set>
 
 class BranchMutatorTest : public ::testing::Test
 {
@@ -99,8 +100,11 @@ TEST_F(BranchMutatorTest, CopyBranch)
     ASSERT_EQ(originalGraph.getNbVertices(), 4);
     ASSERT_EQ(targetGraph.getNbVertices(), 5);
 
-    Mutator::BranchMutator::copyBranch(originalGraph, targetGraph);
-   
+    Mutator::BranchMutator::copyBranch((const TPG::TPGVertex*) root_o, targetGraph);
+    /*File::TPGGraphDotExporter tpg("/home/abdrissi/Documents/res.dot",targetGraph);
+
+    tpg.print();
+    */
     ASSERT_EQ(targetGraph.getNbVertices(), 7);
     ASSERT_EQ(targetGraph.getNbRootVertices(), 2);
     ASSERT_EQ(targetGraph.getEdges().size(), 7);
@@ -139,7 +143,7 @@ TEST_F(BranchMutatorTest, copyTeamAndEdges)
 
     std::unordered_map<const TPG::TPGVertex*, TPG::TPGVertex*> vertexMap;
 
-    Mutator::BranchMutator::copyTeamAndEdges(originalGraph, targetGraph, vertexMap);
+    Mutator::BranchMutator::copyTeamAndEdges((const TPG::TPGVertex*) root_o, targetGraph, vertexMap);
 
     ASSERT_TRUE(
         targetGraph.hasVertex((const TPG::TPGVertex&)(*root_t)));
@@ -151,4 +155,50 @@ TEST_F(BranchMutatorTest, copyTeamAndEdges)
     ASSERT_TRUE(targetGraph.hasVertex((const TPG::TPGVertex&)(*vertexMap[a0_o])));
     ASSERT_TRUE(targetGraph.hasVertex((const TPG::TPGVertex&)(*vertexMap[a1_o])));
 
+}
+
+TEST_F(BranchMutatorTest, getAllVerticesFromTeam)
+{
+    TPG::TPGGraph Graph(*e);
+
+    root_t = &Graph.addNewTeam();                  //      0      0
+    team0_t = &Graph.addNewTeam();                 //      |      |
+    team1_t = &Graph.addNewTeam();                 //      0      0
+    a0_t = &Graph.addNewAction(0);                 //      '\    /'
+    a1_t = &Graph.addNewAction(1);                 //        \  /
+    Graph.addNewEdge(*root_t, *team0_t, progP0_t); //         \/
+    Graph.addNewEdge(*root_t, *team1_t, progP1_t); //          0
+    Graph.addNewEdge(*team0_t, *a0_t, progP2_t);   //
+    Graph.addNewEdge(*team1_t, *a1_t, progP3_t);   //
+
+    std::unordered_set<const TPG::TPGVertex *> vertices;
+    Mutator::BranchMutator::getAllVerticesFromTeam((const TPG::TPGVertex*) root_t, vertices);
+
+    ASSERT_EQ(vertices.size(),5);
+    ASSERT_TRUE(vertices.find(root_t)!=vertices.end());
+    ASSERT_TRUE(vertices.find(team0_t)!=vertices.end());
+    ASSERT_TRUE(vertices.find(team1_t)!=vertices.end());
+    ASSERT_TRUE(vertices.find(a0_t)!=vertices.end());
+    ASSERT_TRUE(vertices.find(a1_t)!=vertices.end());
+
+}
+
+TEST_F(BranchMutatorTest, getAllEdgesFromTeam)
+{
+    TPG::TPGGraph Graph(*e);
+
+    root_t = &Graph.addNewTeam();                  //      0      0
+    team0_t = &Graph.addNewTeam();                 //      |      |
+    team1_t = &Graph.addNewTeam();                 //      0      0
+    a0_t = &Graph.addNewAction(0);                 //      '\    /'
+    a1_t = &Graph.addNewAction(1);                 //        \  /
+    Graph.addNewEdge(*root_t,  *team0_t, progP0_t);//         \/
+    Graph.addNewEdge(*root_t,  *team1_t, progP1_t);//          0
+    Graph.addNewEdge(*team0_t, *a0_t,    progP2_t);//
+    Graph.addNewEdge(*team1_t, *a1_t,    progP3_t);
+
+    std::unordered_set<const TPG::TPGEdge *> edges;
+    Mutator::BranchMutator::getAllEdgesFromTeam((const TPG::TPGVertex*) root_t, edges);
+
+    ASSERT_EQ(edges.size(),4);
 }

@@ -311,8 +311,6 @@ uint64_t Learn::LearningAgent::train(volatile bool& altTraining,
     const int barLength = 50;
     uint64_t generationNumber = 0;
 
-    uint64_t aggregationNumber = 0;
-
     while (!altTraining && generationNumber < this->params.nbGenerations) {
         // Train one generation
         trainOneGeneration(generationNumber);

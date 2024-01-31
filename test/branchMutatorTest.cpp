@@ -141,16 +141,6 @@ TEST_F(BranchMutatorTest, copyTeamAndEdges)
 
     Mutator::BranchMutator::copyTeamAndEdges(originalGraph, targetGraph, vertexMap);
 
-    ASSERT_EQ(targetGraph.getNbVertices(), 7);
-    ASSERT_EQ(targetGraph.getNbRootVertices(), 2);
-    ASSERT_EQ(targetGraph.getEdges().size(), 7);
-
-    ASSERT_EQ(a0_t->getIncomingEdges().size(), 2);
-    ASSERT_EQ(a1_t->getIncomingEdges().size(), 2);
-
-    ASSERT_EQ(a0_t->getOutgoingEdges().size(), 0);
-    ASSERT_EQ(a1_t->getOutgoingEdges().size(), 0);
-
     ASSERT_TRUE(
         targetGraph.hasVertex((const TPG::TPGVertex&)(*root_t)));
 

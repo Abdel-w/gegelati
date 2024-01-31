@@ -12,7 +12,7 @@
 #include "learn/FLAgent.h"
 
 uint64_t Learn::FLAgent::train(volatile bool& altTraining,
-                                     bool printProgressBar, const TPG::TPGVertex* bestBranch)
+                                     bool printProgressBar)
 {
     const int barLength = 50;
     uint64_t generationNumber = 0;
@@ -23,8 +23,7 @@ uint64_t Learn::FLAgent::train(volatile bool& altTraining,
         // Train one generation
         if (generationNumber == this->params.nbGenerationPerAggregation * (aggregationNumber+1))
         {
-            //Mutator::BranchMutator::copyBranch(*bestBranch, *this->getTPGGraph());
-   
+            Mutator::BranchMutator::copyBranch(this->bestBranch, *this->getTPGGraph());
         }
         
         trainOneGeneration(generationNumber);

@@ -6,6 +6,9 @@ namespace Learn {
 
 	class FLAgent: public LearningAgent
     {
+      private:
+      //the best branch received from another tpgGraph
+      TPG::TPGVertex*  bestBranch;
       public:
         /**
          * \brief Constructor for FLAgent.
@@ -37,7 +40,7 @@ namespace Learn {
          * \param[in] printProgressBar select whether a progress bar will be
          * printed in the console. \return the number of completed generations.
          */
-        virtual uint64_t train(volatile bool& altTraining, bool printProgressBar,const TPG::TPGVertex* bestBranch);       
+        uint64_t train(volatile bool& altTraining, bool printProgressBar);       
         
     };
 

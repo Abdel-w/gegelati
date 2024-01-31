@@ -9,21 +9,21 @@ namespace Mutator {
     namespace BranchMutator {
 
         // Copy the branch from the original graph to the copied graph
-        void copyBranch(const TPG::TPGVertex* bestRoot,
+        void copyBranch(const TPG::TPGVertex* bestBranch,
                                  TPG::TPGGraph& targetGraph);
 
          // Helper function to copy a TPG team and its outgoing edges recursively
-        void copyTeamAndEdges(const TPG::TPGVertex* bestRoot,
+        void copyTeamAndEdges(const TPG::TPGVertex*  bestBranch,
                               TPG::TPGGraph& targetGraph,
                               std::unordered_map<const TPG::TPGVertex*,
                                                  TPG::TPGVertex*>& vertexMap);
 
         // Helper function to get All vertices from rootTeam recursively
-        void getAllVerticesFromTeam(const TPG::TPGVertex* rootTeam, 
+        void getAllVerticesFromTeam(const TPG::TPGVertex*  bestBranch, 
                             std::unordered_set<const TPG::TPGVertex*>&  visited);
                             
         // Helper function to get All Edges from rootTeam recursively
-        void getAllEdgesFromTeam(const TPG::TPGVertex* rootTeam, 
-                            std::unordered_set<const TPG::TPGEdge*>&  visited);
+        void getAllEdgesFromTeam(const TPG::TPGVertex*  bestBranch, 
+                                std::unordered_set<const TPG::TPGEdge*>&  visited);
     };                                // namespace BranchMutator
 };                                    // namespace Mutator

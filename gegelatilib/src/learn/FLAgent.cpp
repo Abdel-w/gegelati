@@ -11,8 +11,19 @@
 #include "learn/learningAgent.h"
 #include "learn/FLAgent.h"
 
+TPG::TPGVertex* Learn::FLAgent::getBestBranch()
+{
+    return this->bestBranch;
+}
+
+void Learn::FLAgent::setBestBranch(TPG::TPGVertex* rootTeam)
+{
+    this->bestBranch = rootTeam;
+}
+
 uint64_t Learn::FLAgent::train(volatile bool& altTraining,
-                                     bool printProgressBar)
+                               bool printProgressBar,
+                               const TPG::TPGVertex* Branch)
 {
     const int barLength = 50;
     uint64_t generationNumber = 0;
@@ -23,12 +34,14 @@ uint64_t Learn::FLAgent::train(volatile bool& altTraining,
         // Train one generation
         if (generationNumber == this->params.nbGenerationPerAggregation * (aggregationNumber+1))
         {
+            this->bestBranch =(TPG::TPGVertex*) Branch;
             Mutator::BranchMutator::copyBranch(this->bestBranch, *this->getTPGGraph());
+            aggregationNumber++;
         }
         
         trainOneGeneration(generationNumber);
         generationNumber++;
-
+        
         // Print progressBar (homemade, probably not ideal)
         if (printProgressBar) {
             printf("\rTraining ["); // back

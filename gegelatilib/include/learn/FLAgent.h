@@ -10,6 +10,9 @@ namespace Learn {
       //the best branch received from another tpgGraph
       TPG::TPGVertex*  bestBranch;
       public:
+      TPG::TPGVertex* getBestBranch();
+
+      void setBestBranch(TPG::TPGVertex* rootTeam);
         /**
          * \brief Constructor for FLAgent.
          *
@@ -40,7 +43,8 @@ namespace Learn {
          * \param[in] printProgressBar select whether a progress bar will be
          * printed in the console. \return the number of completed generations.
          */
-        uint64_t train(volatile bool& altTraining, bool printProgressBar);       
+        uint64_t train(volatile bool& altTraining, bool printProgressBarr,
+                       const TPG::TPGVertex* Branch);       
         
     };
 

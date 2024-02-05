@@ -328,9 +328,9 @@ void TPG::TPGGraph::clearProgramIntrons()
 }
 
 std::list<TPG::TPGVertex*>::iterator TPG::TPGGraph::findAction(
-    uint64_t actionID)
+    uint64_t actionID, bool& exist)
 {
-    return std::find_if( this->vertices.begin(), this->vertices.end(),
+    auto it =  std::find_if( this->vertices.begin(), this->vertices.end(),
          [actionID](TPG::TPGVertex* vertex) {
              if (dynamic_cast<const TPG::TPGAction*>(vertex) != nullptr) {
                  return actionID == ((TPG::TPGAction*)vertex)->getActionID();
@@ -338,5 +338,8 @@ std::list<TPG::TPGVertex*>::iterator TPG::TPGGraph::findAction(
              else {
                  return false;
              }
-         });             
+         });
+    
+    (it == this->vertices.end())? exist = false : exist = true;     
+    return it;            
 }

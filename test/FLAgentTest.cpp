@@ -1,5 +1,5 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2023) :
+ * Copyright or ï¿½ or Copr. IETR/INSA - Rennes (2019 - 2023) :
  *
  * QuentinVacher <98522623+QuentinVacher-rl@users.noreply.github.com> (2023)
  * Karol Desnos <kdesnos@insa-rennes.fr> (2019 - 2022)
@@ -63,7 +63,6 @@
 #include "learn/parallelLearningAgent.h"
 #include "learn/stickGameWithOpponent.h"
 
-#include "file/tpgGraphDotExporter.h"
 
 class FLAgentTest : public ::testing::Test
 {
@@ -136,15 +135,15 @@ TEST_F(FLAgentTest, Train)
     ASSERT_NO_THROW(la2.train(alt, true,la1.getBestRoot().first))
         << "Training a TPG for several generation should not fail.";
 
-    File::TPGGraphDotExporter tpg1(
-        "C:\\Users\\abdrissi\\Documents\\GitHub\\tpgbranch.dot",
-        *(la1.getTPGGraph()));
-    File::TPGGraphDotExporter tpg2(
-        "C:\\Users\\abdrissi\\Documents\\GitHub\\tpgRes.dot",
-        *(la2.getTPGGraph()));
+    // File::TPGGraphDotExporter tpg1(
+    //     "C:\\Users\\abdrissi\\Documents\\GitHub\\tpgbranch.dot",
+    //     *(la1.getTPGGraph()));
+    // File::TPGGraphDotExporter tpg2(
+    //     "C:\\Users\\abdrissi\\Documents\\GitHub\\tpgRes.dot",
+    //     *(la2.getTPGGraph()));
 
-    tpg1.print();
-    tpg2.print();
+    // tpg1.print();
+    // tpg2.print();
     alt = true;
     ASSERT_NO_THROW(la1.train(alt, true))
         << "Using the boolean reference to stop the training should not fail.";

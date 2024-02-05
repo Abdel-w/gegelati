@@ -40,10 +40,17 @@ void Mutator::BranchMutator::copyTeamAndEdges(
                     (TPG::TPGVertex*)&targetGraph.addNewTeam();
             }
             else if (dynamic_cast<const TPG::TPGAction*>(originalTeam) !=
-                     nullptr) {                  
+                     nullptr) { 
+                    bool exist;                 
                     vertexMap[originalTeam] = 
                         (TPG::TPGVertex*)(*targetGraph.findAction(
-                            ((TPG::TPGAction*)originalTeam)->getActionID()));
+                            ((TPG::TPGAction*)originalTeam)->getActionID(), exist));
+                    //if the TPGAction doesn't exist creat new one with the same ActionID
+                    if (!exist)
+                    {
+                        vertexMap[originalTeam] = (TPG::TPGVertex*)&targetGraph.addNewAction(((TPG::TPGAction*)originalTeam)->getActionID());
+                    }
+                    
             }       
         }else {
             vertexMap[originalTeam] = (TPG::TPGVertex*) originalTeam;

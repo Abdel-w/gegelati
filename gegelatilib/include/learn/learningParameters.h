@@ -198,7 +198,7 @@ namespace Learn {
         /// training, and false otherwise
         bool doValidation = false;
 
-
+        /// the period of copying the incoming branchs
         uint64_t nbGenerationPerAggregation = 5;
     } LearningParameters;
 }; // namespace Learn

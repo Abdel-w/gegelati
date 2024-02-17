@@ -20,8 +20,9 @@ class BranchMutatorTest : public ::testing::Test
     std::shared_ptr<Program::Program> progP1_t;
     std::shared_ptr<Program::Program> progP2_t;
     std::shared_ptr<Program::Program> progP3_t;
+    
 
-    std::shared_ptr<Program::Program> progP0_o;
+    std::shared_ptr<Program::Program> progP0_o;     
     std::shared_ptr<Program::Program> progP1_o;
     std::shared_ptr<Program::Program> progP2_o;
 

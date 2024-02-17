@@ -300,7 +300,14 @@ namespace TPG {
          * TPGGraph and removes all intron instructions from them.
          */
         void clearProgramIntrons();
-
+         /**
+         * \brief Check whether a given action exists in the TPGGraph.
+         *
+         * \param[in] actionID the ID if the TPGAction whose presence in the TPGGraph
+         * is checked.
+         * \param[in] exist true if the action exists in the TPGGraph, false otherwise.
+         * \return std::list<TPG::TPGVertex*>::iterator of the first TPGAction found with the same actionIDs.
+         */
         std::list<TPG::TPGVertex*>::iterator findAction(uint64_t actionID, bool& exist);
 
       protected:

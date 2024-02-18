@@ -3,7 +3,7 @@
 
 #include "learn/FLAgent.h"
 #include "learn/learningEnvironment.h"
-#include "learn/earningParameters.h"
+#include "learn/learningParameters.h"
 #include "learn/learningAgent.h"
 
 #include "tpg/tpgFactory.h"

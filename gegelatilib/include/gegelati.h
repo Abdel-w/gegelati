@@ -75,6 +75,7 @@
 #include <learn/learningEnvironment.h>
 #include <learn/learningParameters.h>
 #include <learn/parallelLearningAgent.h>
+#include <learn/FLAgent.h> 
 
 #include <learn/adversarialEvaluationResult.h>
 #include <learn/adversarialJob.h>
@@ -96,6 +97,7 @@
 #include <mutator/programMutator.h>
 #include <mutator/rng.h>
 #include <mutator/tpgMutator.h>
+#include <mutator/BranchMutator.h>
 
 #include <program/line.h>
 #include <program/program.h>

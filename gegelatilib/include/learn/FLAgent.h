@@ -70,12 +70,12 @@ namespace Learn {
          * \param[in] factory The TPGFactory used to create the TPGGraph. A
          * default TPGFactory is used if none is provided.
          */
-        FLAgent(LearningEnvironment& le, const Instructions::Set& iSet,
-                      const LearningParameters& p,
-                      const TPG::TPGFactory& factory = TPG::TPGFactory())
+      FLAgent(LearningEnvironment& le, const Instructions::Set& iSet,
+                     const LearningParameters& p,
+                     const TPG::TPGFactory& factory = TPG::TPGFactory())
             : LearningAgent(le, iSet, p, factory)
-        {
-        }
+      {
+      }
         /**
          * \brief Train the TPGGraph for a given number of generation.
          *

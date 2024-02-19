@@ -76,6 +76,7 @@
 #include <learn/learningParameters.h>
 #include <learn/parallelLearningAgent.h>
 #include <learn/FLAgent.h> 
+#include <learn/FLAgentManager.h>
 
 #include <learn/adversarialEvaluationResult.h>
 #include <learn/adversarialJob.h>

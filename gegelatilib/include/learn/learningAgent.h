@@ -62,7 +62,7 @@ namespace Learn {
      */
     class LearningAgent
     {
-      protected:
+      public:
         /// LearningEnvironment with which the LearningAgent will interact.
         LearningEnvironment& learningEnvironment;
 

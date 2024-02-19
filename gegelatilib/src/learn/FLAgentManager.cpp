@@ -1,5 +1,5 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2021) :
+ * Copyright or ï¿½ or Copr. IETR/INSA - Rennes (2019 - 2021) :
  *
  * Karol Desnos <kdesnos@insa-rennes.fr> (2019 - 2020)
  * Nicolas Sourbier <nsourbie@insa-rennes.fr> (2020)
@@ -34,13 +34,63 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-
+#include <inttypes.h>
 #include <cstdint>
+#include "mutator/BranchMutator.h"
 
+#include "learn/learningAgent.h"
 #include "learn/FLAgentManager.h"        
 
-uint64_t Learn::FLAgentManager trainAndExchangeBestBranches(
+uint64_t Learn::FLAgentManager::trainAndExchangeBestBranches(
     volatile bool& altTraining, bool printProgressBar)
 {
-    return 0;
+    const int barLength = 50;
+    uint64_t generationNumber = 0;
+
+    uint64_t aggregationNumber = 0;
+
+    while (!altTraining && generationNumber < this->agent1.params.nbGenerations) {
+        // Train one generation
+        if (generationNumber == this->agent1.params.nbGenerationPerAggregation * (aggregationNumber+1))
+        {
+            Mutator::BranchMutator::copyBranch(this->agent1.getBestRoot().first, *(this->agent2.getTPGGraph()));
+            Mutator::BranchMutator::copyBranch(this->agent2.getBestRoot().first, *(this->agent1.getTPGGraph()));
+            aggregationNumber++;
+        }
+        
+        this->agent1.trainOneGeneration(generationNumber);
+        this->agent2.trainOneGeneration(generationNumber);
+        generationNumber++;
+        
+        // Print progressBar (homemade, probably not ideal)
+        if (printProgressBar) {
+            printf("\rTraining ["); // back
+            // filling ratio
+            double ratio =
+                (double)generationNumber / (double)this->agent1.params.nbGenerations;
+            int filledPart = (int)((double)ratio * (double)barLength);
+            // filled part
+            for (int i = 0; i < filledPart; i++) {
+                printf("%c", (char)219);
+            }
+
+            // empty part
+            for (int i = filledPart; i < barLength; i++) {
+                printf(" ");
+            }
+
+            printf("] %4.2f%%", ratio * 100.00);
+        }
+    }
+
+    if (printProgressBar) {
+        if (!altTraining) {
+            printf("\nTraining completed\n");
+        }
+        else {
+            printf("\nTraining alted at generation %" PRIu64 ".\n",
+                   generationNumber);
+        }
+    }
+    return generationNumber;
 }

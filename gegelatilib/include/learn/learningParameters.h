@@ -198,6 +198,9 @@ namespace Learn {
         /// training, and false otherwise
         bool doValidation = false;
 
+        /// JSon comment
+        inline static const std::string nbGenerationPerAggregationComment =
+            "// number of generetions needed to copy the incoming branchs";
         /// the period of copying the incoming branchs
         uint64_t nbGenerationPerAggregation = 5;
     } LearningParameters;

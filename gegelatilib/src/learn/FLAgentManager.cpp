@@ -49,17 +49,24 @@ uint64_t Learn::FLAgentManager::trainAndExchangeBestBranches(
 
     uint64_t aggregationNumber = 0;
 
-    while (!altTraining && generationNumber < this->agent1.params.nbGenerations) {
+    while (!altTraining && generationNumber < this->agents[0]->params.nbGenerations) {
         // Train one generation
-        if (generationNumber == this->agent1.params.nbGenerationPerAggregation * (aggregationNumber+1))
+        if (generationNumber == this->agents[0]->params.nbGenerationPerAggregation * (aggregationNumber+1))
         {
-            Mutator::BranchMutator::copyBranch(this->agent1.getBestRoot().first, *(this->agent2.getTPGGraph()));
-            Mutator::BranchMutator::copyBranch(this->agent2.getBestRoot().first, *(this->agent1.getTPGGraph()));
+            //for each agent copy all received branchs in the TPGGraph
+            std::for_each(this->agents.begin(),this->agents.end(),
+                            [](Learn::FLAgent* agent){
+                                
+                                // copy all branchs 
+                                for (auto branch : agent->getBestBranch()){
+                                    Mutator::BranchMutator::copyBranch(branch, *(agent->getTPGGraph()));
+                                }  
+                            });
             aggregationNumber++;
         }
         
-        this->agent1.trainOneGeneration(generationNumber);
-        this->agent2.trainOneGeneration(generationNumber);
+        this->agents[0]->trainOneGeneration(generationNumber);
+        this->agents[1]->trainOneGeneration(generationNumber);
         generationNumber++;
         
         // Print progressBar (homemade, probably not ideal)
@@ -67,7 +74,7 @@ uint64_t Learn::FLAgentManager::trainAndExchangeBestBranches(
             printf("\rTraining ["); // back
             // filling ratio
             double ratio =
-                (double)generationNumber / (double)this->agent1.params.nbGenerations;
+                (double)generationNumber / (double)this->agents[0]->params.nbGenerations;
             int filledPart = (int)((double)ratio * (double)barLength);
             // filled part
             for (int i = 0; i < filledPart; i++) {

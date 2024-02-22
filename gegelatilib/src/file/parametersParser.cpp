@@ -222,6 +222,10 @@ void File::ParametersParser::setParameterFromString(
         params.doValidation = value.asBool();
         return;
     }
+    if (param == "nbGenerationPerAggregation") {
+        params.nbGenerationPerAggregation = value.asUInt();
+        return;
+    }
     // we didn't recognize the symbol
     std::cerr << "Ignoring unknown parameter " << param << std::endl;
 }

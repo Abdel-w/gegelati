@@ -47,16 +47,16 @@ namespace Learn {
 	class FLAgent: public LearningAgent
     {
       private:
-      ///the best branch received from another tpgGraph
-      TPG::TPGVertex*  bestBranch;
+      ///the best branchs received from another tpgGraph
+      std::vector<TPG::TPGVertex*> bestBranchs;
       public:
       /**
-         * \brief getter for bestBranch.
+         * \brief getter for bestBranchs.
          * \return TPGVertex pointer
          */
-      TPG::TPGVertex* getBestBranch();
+      std::vector<TPG::TPGVertex*> getBestBranch();
       /**
-         * \brief setter for bestBranch.
+         * \brief setter for bestBranchs.
          * \param[in] rootTeam TPGVertex pointer 
          */
       void setBestBranch(TPG::TPGVertex* rootTeam);

@@ -203,6 +203,9 @@ namespace Learn {
             "// number of generetions needed to copy the incoming branchs";
         /// the period of copying the incoming branchs
         uint64_t nbGenerationPerAggregation = 5;
+
+        /// The maximum number of connections an agent can have.
+        uint64_t maxNbOfConnections = 4;
     } LearningParameters;
 }; // namespace Learn
 

@@ -69,6 +69,7 @@ namespace TPG {
             : source{src}, destination{dest}, program{prog} {};
 
         /**
+         * +
          * \brief Get a const reference to the Program of the TPGEdge.
          *
          * \return a const reference to the Program of the TPGEdge.

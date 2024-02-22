@@ -48,13 +48,13 @@ namespace Mutator {
         /**
          * \brief Copy the branch from the original graph to the copied graph
          */
-        void copyBranch(const TPG::TPGVertex* bestBranch,
+        void copyBranch(const TPG::TPGVertex* bestBranchs,
                                  TPG::TPGGraph& targetGraph);
 
          /**
           * \brief  Helper function to copy a TPG team and its outgoing edges recursively
           */
-        void copyTeamAndEdges(const TPG::TPGVertex*  bestBranch,
+        void copyTeamAndEdges(const TPG::TPGVertex*  bestBranchs,
                               TPG::TPGGraph& targetGraph,
                               std::unordered_map<const TPG::TPGVertex*,
                                                  TPG::TPGVertex*>& vertexMap);
@@ -62,13 +62,13 @@ namespace Mutator {
         /**
          * \brief Helper function to get All vertices from rootTeam recursively
          */
-        void getAllVerticesFromTeam(const TPG::TPGVertex*  bestBranch, 
+        void getAllVerticesFromTeam(const TPG::TPGVertex*  bestBranchs, 
                             std::unordered_set<const TPG::TPGVertex*>&  visited);
                             
         /** 
          * \brief Helper function to get All Edges from rootTeam recursively
          */
-        void getAllEdgesFromTeam(const TPG::TPGVertex*  bestBranch, 
+        void getAllEdgesFromTeam(const TPG::TPGVertex*  bestBranchs, 
                                 std::unordered_set<const TPG::TPGEdge*>&  visited);
     };                                // namespace BranchMutator
 };                                    // namespace Mutator

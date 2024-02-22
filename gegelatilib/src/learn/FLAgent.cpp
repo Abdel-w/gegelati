@@ -48,15 +48,13 @@
 #include "learn/learningAgent.h"
 #include "learn/FLAgent.h"
 
-TPG::TPGVertex* Learn::FLAgent::getBestBranch()
-{
-    return this->bestBranch;
-}
+std::vector<TPG::TPGVertex*> Learn::FLAgent::getBestBranch() {
+    return this->bestBranchs;
+} 
 
-void Learn::FLAgent::setBestBranch(TPG::TPGVertex* rootTeam)
-{
-    this->bestBranch = rootTeam;
-}
+void Learn::FLAgent::setBestBranch(TPG::TPGVertex* rootTeam) {
+    this->bestBranchs.push_back(rootTeam);
+} 
 
 uint64_t Learn::FLAgent::train(volatile bool& altTraining,
                                bool printProgressBar,
@@ -71,8 +69,11 @@ uint64_t Learn::FLAgent::train(volatile bool& altTraining,
         // Train one generation
         if (generationNumber == this->params.nbGenerationPerAggregation * (aggregationNumber+1))
         {
-            this->bestBranch =(TPG::TPGVertex*) Branch;
-            Mutator::BranchMutator::copyBranch(this->bestBranch, *this->getTPGGraph());
+            //copy all received branchs in the TPGGraph
+            std::for_each(this->bestBranchs.begin(),this->bestBranchs.end(),
+                            [this](TPG::TPGVertex* b){
+                                Mutator::BranchMutator::copyBranch(b, *this->getTPGGraph());
+                            });
             aggregationNumber++;
         }
         

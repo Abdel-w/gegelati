@@ -132,8 +132,9 @@ TEST_F(FLAgentTest, Train)
     ASSERT_NO_THROW(la1.train(alt, true))
         << "Training a TPG for several generation should not fail.";
 
-    ASSERT_NO_THROW(la2.train(alt, true,la1.getBestRoot().first))
-        << "Training a TPG for several generation should not fail.";
+    la2.setBestBranch((TPG::TPGVertex *) la1.getBestRoot().first);
+    ASSERT_NO_THROW(la2.train(alt, true))
+        << "Using the boolean reference to stop the training should not fail.";
 
     // File::TPGGraphDotExporter tpg1(
     //     "C:\\Users\\abdrissi\\Documents\\GitHub\\tpgbranch.dot",
@@ -147,6 +148,8 @@ TEST_F(FLAgentTest, Train)
     alt = true;
     ASSERT_NO_THROW(la1.train(alt, true))
         << "Using the boolean reference to stop the training should not fail.";
-    ASSERT_NO_THROW(la2.train(alt, true, la1.getBestRoot().first))
+    
+    la2.setBestBranch((TPG::TPGVertex *) la1.getBestRoot().first);
+    ASSERT_NO_THROW(la2.train(alt, true))
         << "Using the boolean reference to stop the training should not fail.";
 }

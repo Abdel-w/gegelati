@@ -22,7 +22,7 @@ namespace Learn {
      * a given LearningEnvironment using two agents.
      */
     class FLAgentManager {
-    private:
+    public:
         ///number of agents
         int nbAgents;
         /// FLAgents
@@ -40,14 +40,7 @@ namespace Learn {
          * \param[in] agent2 The second FLAgent.
          * \param[in] bothDer Flag indicating whether the connection is bidirectional (default is false).
          */
-        void connectAgents(FLAgent* agent1, FLAgent* agent2,bool bothDer = false) {
-            agentConnections[agent1].insert(agent2);
-            // If bothDer is true, then we need to make agents connected in both directions
-            if (bothDer)
-            {
-                agentConnections[agent2].insert(agent1);
-            }
-        }
+        void connectAgents(FLAgent* agent1, FLAgent* agent2,bool bothDer = false); 
 
     public:
         /**
@@ -100,34 +93,15 @@ namespace Learn {
          * - Each agent has at least one receiving connection.
          * - No agent has more than "maxNbOfConnections" in both directions.
          */
-        void connectAgentsPseudoRandomly() {
-            Mutator::RNG rng;
+        void connectAgentsPseudoRandomly(); 
 
-            for (FLAgent* agent : this->agents) {
-                // Ensure each agent has at least one receiving connection
-                FLAgent* sendingAgent = this->agents[rng.getUnsignedInt64(0, this->nbAgents - 1)];
-                // Put agent in the sendingAgent's list of connections (sendingAgent can send data to agent)
-                this->connectAgents(sendingAgent, agent,false);
-
-                // Determine the number of additional connections
-                uint64_t nbAdditionalConnections = rng.getUnsignedInt64(0,agent->params.maxNbOfConnections);
-
-                // Connect pseudorandomly up to maxNbOfConnections in both directions
-                for (int i = 0; i < nbAdditionalConnections && this->agentConnections[agent].size() < agent->params.maxNbOfConnections ; ++i) {
-                    FLAgent* targetAgent = this->agents[rng.getUnsignedInt64(0, this->nbAgents - 1)];
-
-                    // Avoid self-connection 
-                    while (targetAgent == agent ) {
-                        targetAgent = this->agents[rng.getUnsignedInt64(0, this->nbAgents - 1)];
-                    }
-                    //avoid exceeding maxNbOfConnections for targetAgent
-                    if (this->agentConnections[targetAgent].size() >= agent->params.maxNbOfConnections){
-                        this->connectAgents(agent, targetAgent,false);
-                    }else{
-                        this->connectAgents(agent, targetAgent,true);
-                    }          
-                }
-            }
-        }
+        /**
+         * \brief Exchange the best branch among all FLAgents in the FLAgentManager.
+         *
+         * This method iterates through all FLAgents in the FLAgentManager and exchanges the best root
+         * among connected agents. Each FLAgent sends its best root to the connected agents,
+         * and each agent receives the best root from its connected agents.
+         */
+        void exchangeBestBranchs();
     };
 }  // namespace Learn

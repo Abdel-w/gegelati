@@ -40,6 +40,7 @@
 
 #include "learn/learningAgent.h"
 #include "learn/FLAgentManager.h"        
+#include "learn/FLAgentManager.h"
 
 uint64_t Learn::FLAgentManager::trainAndExchangeBestBranches(
     volatile bool& altTraining, bool printProgressBar)
@@ -53,10 +54,11 @@ uint64_t Learn::FLAgentManager::trainAndExchangeBestBranches(
         // Train one generation
         if (generationNumber == this->agents[0]->params.nbGenerationPerAggregation * (aggregationNumber+1))
         {
+            exchangeBestBranchs();
             //for each agent copy all received branchs in the TPGGraph
             std::for_each(this->agents.begin(),this->agents.end(),
                             [](Learn::FLAgent* agent){
-                                
+
                                 // copy all branchs 
                                 for (auto branch : agent->getBestBranch()){
                                     Mutator::BranchMutator::copyBranch(branch, *(agent->getTPGGraph()));
@@ -64,9 +66,10 @@ uint64_t Learn::FLAgentManager::trainAndExchangeBestBranches(
                             });
             aggregationNumber++;
         }
-        
-        this->agents[0]->trainOneGeneration(generationNumber);
-        this->agents[1]->trainOneGeneration(generationNumber);
+        for (auto agent : this->agents)
+        {
+            agent->trainOneGeneration(generationNumber);
+        }
         generationNumber++;
         
         // Print progressBar (homemade, probably not ideal)
@@ -100,4 +103,61 @@ uint64_t Learn::FLAgentManager::trainAndExchangeBestBranches(
         }
     }
     return generationNumber;
+}
+
+void Learn::FLAgentManager::connectAgentsPseudoRandomly()
+{
+    Mutator::RNG rng;
+
+    for (FLAgent* agent : this->agents) {
+        // Ensure each agent has at least one receiving connection
+        FLAgent* sendingAgent = this->agents[rng.getUnsignedInt64(0, this->nbAgents - 1)];
+        // Put agent in the sendingAgent's list of connections (sendingAgent can send data to agent)
+        this->connectAgents(sendingAgent, agent,false);
+
+        // Determine the number of additional connections
+        uint64_t nbAdditionalConnections = rng.getUnsignedInt64(0,agent->params.maxNbOfConnections);
+
+        // Connect pseudorandomly up to maxNbOfConnections in both directions
+        for (int i = 0; i < nbAdditionalConnections && this->agentConnections[agent].size() < agent->params.maxNbOfConnections ; ++i) {
+            FLAgent* targetAgent = this->agents[rng.getUnsignedInt64(0, this->nbAgents - 1)];
+
+            // Avoid self-connection 
+            while (targetAgent == agent ) {
+                targetAgent = this->agents[rng.getUnsignedInt64(0, this->nbAgents - 1)];
+            }
+            //avoid exceeding maxNbOfConnections for targetAgent
+            if (this->agentConnections[targetAgent].size() >= agent->params.maxNbOfConnections){
+                this->connectAgents(agent, targetAgent,false);
+            }else{
+                this->connectAgents(agent, targetAgent,true);
+            }          
+        }
+    }
+}
+
+void Learn::FLAgentManager::exchangeBestBranchs()
+{
+    for (FLAgent* sender : this->agents) {
+        for (FLAgent* receiver : this->agentConnections[sender]) {
+            // Skip if the sender and receiver are the same
+            if (sender == receiver) {
+                continue;
+            }
+
+            // Sender sends its best root to the receiver
+            receiver->setBestBranch((TPG::TPGVertex*) sender->getBestRoot().first);
+        }
+    }
+}
+
+void Learn::FLAgentManager::connectAgents(FLAgent* agent1, FLAgent* agent2,
+                                          bool bothDer)
+{
+    agentConnections[agent1].insert(agent2);
+    // If bothDer is true, then we need to make agents connected in both directions
+    if (bothDer)
+    {
+        agentConnections[agent2].insert(agent1);
+    }
 }

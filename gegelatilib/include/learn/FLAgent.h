@@ -79,6 +79,8 @@ namespace Learn {
         /**
          * \brief Train the TPGGraph for a given number of generation.
          *
+         * This method assumes that it receives the best branches from other agents,
+         * via an external programme.
          * The method trains the TPGGraph for a given number of generation,
          * unless the referenced boolean value becomes false (evaluated at each
          * generation).
@@ -89,12 +91,9 @@ namespace Learn {
          * used to halt the training process before its completion.
          * \param[in] printProgressBar select whether a progress bar will be
          * printed in the console. 
-         * \param[in] Branch the Branch to copy into the TPGGraph
          * \return the number of completed generations.
          */
-        uint64_t train(volatile bool& altTraining, bool printProgressBar,
-                       const TPG::TPGVertex* Branch);       
-        
+        uint64_t train(volatile bool& altTraining, bool printProgressBar)override;  
     };
 
 }

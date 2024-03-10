@@ -72,7 +72,7 @@ class trainFLAgentTest : public ::testing::Test
   protected:
     const size_t size1{24};
     const size_t size2{32};
-    std::vector<std::reference_wrapper<const Data::DataHandler>> vect;
+    std::vector<std::reference_wrapper<const Data::DataHandler>> vect;// = le.getDataSources();
     Instructions::Set set;
     Environment* e = NULL;
     Learn::LearningParameters params;

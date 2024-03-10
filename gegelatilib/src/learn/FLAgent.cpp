@@ -57,8 +57,7 @@ void Learn::FLAgent::setBestBranch(TPG::TPGVertex* rootTeam) {
 } 
 
 uint64_t Learn::FLAgent::train(volatile bool& altTraining,
-                               bool printProgressBar,
-                               const TPG::TPGVertex* Branch)
+                               bool printProgressBar)
 {
     const int barLength = 50;
     uint64_t generationNumber = 0;

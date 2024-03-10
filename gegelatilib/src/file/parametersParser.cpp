@@ -226,6 +226,10 @@ void File::ParametersParser::setParameterFromString(
         params.nbGenerationPerAggregation = value.asUInt();
         return;
     }
+    if (param == "maxNbOfConnections") {
+        params.maxNbOfConnections = value.asUInt();
+        return;
+    }
     // we didn't recognize the symbol
     std::cerr << "Ignoring unknown parameter " << param << std::endl;
 }

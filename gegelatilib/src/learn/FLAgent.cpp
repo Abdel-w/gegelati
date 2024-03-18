@@ -48,66 +48,83 @@
 #include "learn/learningAgent.h"
 #include "learn/FLAgent.h"
 
-std::vector<TPG::TPGVertex*> Learn::FLAgent::getBestBranch() {
-    return this->bestBranchs;
-} 
+// template <class BaseLearningAgent>
+// std::vector<TPG::TPGVertex*> Learn::FLAgent<BaseLearningAgent>::getBestBranch() {
+//     return this->bestBranchs;
+// } 
 
-void Learn::FLAgent::setBestBranch(TPG::TPGVertex* rootTeam) {
-    this->bestBranchs.push_back(rootTeam);
-} 
+//template <class BaseLearningAgent>
+//void Learn::FLAgent<BaseLearningAgent>::setBestBranch(TPG::TPGVertex* rootTeam) {
+//    this->bestBranchs.push_back(rootTeam);
+//}
 
-uint64_t Learn::FLAgent::train(volatile bool& altTraining,
-                               bool printProgressBar)
-{
-    const int barLength = 50;
-    uint64_t generationNumber = 0;
+// template <class BaseLearningAgent>
+// void Learn::FLAgent<BaseLearningAgent>::emptyBranchs()
+// {
+//     size_t count =this->bestBranchs.size();
+//     for (size_t i = 0; i < count ; i++)
+//     {
+//         this->bestBranchs.pop_back();
+//     }    
+// }
 
-    uint64_t aggregationNumber = 0;
+// template <class BaseLearningAgent>
+// uint64_t Learn::FLAgent<BaseLearningAgent>::train(volatile bool& altTraining,
+//                                bool printProgressBar)
+// {
+//     const int barLength = 50;
+//     uint64_t generationNumber = 0;
 
-    while (!altTraining && generationNumber < this->params.nbGenerations) {
-        // Train one generation
-        if (generationNumber == this->params.nbGenerationPerAggregation * (aggregationNumber+1))
-        {
-            //copy all received branchs in the TPGGraph
-            std::for_each(this->bestBranchs.begin(),this->bestBranchs.end(),
-                            [this](TPG::TPGVertex* b){
-                                Mutator::BranchMutator::copyBranch(b, *this->getTPGGraph());
-                            });
-            aggregationNumber++;
-        }
+//     uint64_t aggregationNumber = 0;
+
+//     while (!altTraining && generationNumber < this->params.nbGenerations) {
+//         // Train one generation
+//         if (generationNumber == this->params.nbGenerationPerAggregation * (aggregationNumber+1))
+//         {
+//             //copy all received branchs in the TPGGraph
+//             std::for_each(this->bestBranchs.begin(),this->bestBranchs.end(),
+//                             [this](TPG::TPGVertex* b){
+//                                 Mutator::BranchMutator::copyBranch(b, *this->getTPGGraph());
+//                             });
+
+//             //Empty Epmty the bestBranchs vector to get ready to receive new ones
+//             this->emptyBranchs();
+
+//             aggregationNumber++;
+//         }
         
-        trainOneGeneration(generationNumber);
-        generationNumber++;
+//         this->trainOneGeneration(generationNumber);
+//         generationNumber++;
         
-        // Print progressBar (homemade, probably not ideal)
-        if (printProgressBar) {
-            printf("\rTraining ["); // back
-            // filling ratio
-            double ratio =
-                (double)generationNumber / (double)this->params.nbGenerations;
-            int filledPart = (int)((double)ratio * (double)barLength);
-            // filled part
-            for (int i = 0; i < filledPart; i++) {
-                printf("%c", (char)219);
-            }
+//         // Print progressBar (homemade, probably not ideal)
+//         if (printProgressBar) {
+//             printf("\rTraining ["); // back
+//             // filling ratio
+//             double ratio =
+//                 (double)generationNumber / (double)this->params.nbGenerations;
+//             int filledPart = (int)((double)ratio * (double)barLength);
+//             // filled part
+//             for (int i = 0; i < filledPart; i++) {
+//                 printf("%c", (char)219);
+//             }
 
-            // empty part
-            for (int i = filledPart; i < barLength; i++) {
-                printf(" ");
-            }
+//             // empty part
+//             for (int i = filledPart; i < barLength; i++) {
+//                 printf(" ");
+//             }
 
-            printf("] %4.2f%%", ratio * 100.00);
-        }
-    }
+//             printf("] %4.2f%%", ratio * 100.00);
+//         }
+//     }
 
-    if (printProgressBar) {
-        if (!altTraining) {
-            printf("\nTraining completed\n");
-        }
-        else {
-            printf("\nTraining alted at generation %" PRIu64 ".\n",
-                   generationNumber);
-        }
-    }
-    return generationNumber;
-}
+//     if (printProgressBar) {
+//         if (!altTraining) {
+//             printf("\nTraining completed\n");
+//         }
+//         else {
+//             printf("\nTraining alted at generation %" PRIu64 ".\n",
+//                    generationNumber);
+//         }
+//     }
+//     return generationNumber;
+// }

@@ -36,20 +36,30 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 #pragma once
-#include "learn/learningAgent.h"
+#include <inttypes.h>
+#include <queue>
 
+#include "learn/classificationLearningEnvironment.h"
+#include "learn/learningAgent.h"
+#include "learn/adversarialLearningAgent.h"
+#include "learn/classificationLearningAgent.h"
+#include "mutator/tpgMutator.h"
+#include "mutator/BranchMutator.h"
 
 namespace Learn {
   /**
      * \brief Class used to control the learning steps of a TPGGraph within
      * a given LearningEnvironment.
      */
-	class FLAgent: public LearningAgent
+   template <class BaseLearningAgent = LearningAgent>
+	class FLAgent: public BaseLearningAgent
     {
       private:
       ///the best branchs received from another tpgGraph
       std::vector<TPG::TPGVertex*> bestBranchs;
+
       public:
+
       /**
          * \brief getter for bestBranchs.
          * \return TPGVertex pointer
@@ -60,6 +70,11 @@ namespace Learn {
          * \param[in] rootTeam TPGVertex pointer 
          */
       void setBestBranch(TPG::TPGVertex* rootTeam);
+
+      /**
+         * \brief Epmty the bestBranchs vector.
+         */
+      void emptyBranchs();
         /**
          * \brief Constructor for FLAgent.
          *
@@ -73,7 +88,23 @@ namespace Learn {
       FLAgent(LearningEnvironment& le, const Instructions::Set& iSet,
                      const LearningParameters& p,
                      const TPG::TPGFactory& factory = TPG::TPGFactory())
-            : LearningAgent(le, iSet, p, factory)
+            : BaseLearningAgent(le, iSet, p, factory)
+      {
+      }
+      /**
+         * \brief Constructor for FLAgent for ClassificationLearningEnvironment.
+         *
+         * \param[in] le The ClassificationLearningEnvironment for the TPG.
+         * \param[in] iSet Set of Instruction used to compose Programs in the
+         *            learning process.
+         * \param[in] p The LearningParameters for the LearningAgent.
+         * \param[in] factory The TPGFactory used to create the TPGGraph. A
+         * default TPGFactory is used if none is provided.
+         */
+      FLAgent(ClassificationLearningEnvironment& le, const Instructions::Set& iSet,
+                     const LearningParameters& p,
+                     const TPG::TPGFactory& factory = TPG::TPGFactory())
+            : BaseLearningAgent(le, iSet, p, factory)
       {
       }
         /**
@@ -96,4 +127,84 @@ namespace Learn {
         uint64_t train(volatile bool& altTraining, bool printProgressBar)override;  
     };
 
+}
+
+template <class BaseLearningAgent>
+std::vector<TPG::TPGVertex*> Learn::FLAgent<BaseLearningAgent>::getBestBranch() {
+    return this->bestBranchs;
+} 
+
+template <class BaseLearningAgent>
+void Learn::FLAgent<BaseLearningAgent>::setBestBranch(TPG::TPGVertex* rootTeam) {
+    this->bestBranchs.push_back(rootTeam);
+}
+template <class BaseLearningAgent>
+void Learn::FLAgent<BaseLearningAgent>::emptyBranchs()
+{
+    size_t count =this->bestBranchs.size();
+    for (size_t i = 0; i < count ; i++)
+    {
+        this->bestBranchs.pop_back();
+    }    
+}
+
+template <class BaseLearningAgent>
+uint64_t Learn::FLAgent<BaseLearningAgent>::train(volatile bool& altTraining,
+                               bool printProgressBar)
+{
+    const int barLength = 50;
+    uint64_t generationNumber = 0;
+
+    uint64_t aggregationNumber = 0;
+
+    while (!altTraining && generationNumber < this->params.nbGenerations) {
+        // Train one generation
+        if (generationNumber == this->params.nbGenerationPerAggregation * (aggregationNumber+1))
+        {
+            //copy all received branchs in the TPGGraph
+            std::for_each(this->bestBranchs.begin(),this->bestBranchs.end(),
+                            [this](TPG::TPGVertex* b){
+                                Mutator::BranchMutator::copyBranch(b, *this->getTPGGraph());
+                            });
+
+            //Empty Epmty the bestBranchs vector to get ready to receive new ones
+            this->emptyBranchs();
+
+            aggregationNumber++;
+        }
+        
+        this->trainOneGeneration(generationNumber);
+        generationNumber++;
+        
+        // Print progressBar (homemade, probably not ideal)
+        if (printProgressBar) {
+            printf("\rTraining ["); // back
+            // filling ratio
+            double ratio =
+                (double)generationNumber / (double)this->params.nbGenerations;
+            int filledPart = (int)((double)ratio * (double)barLength);
+            // filled part
+            for (int i = 0; i < filledPart; i++) {
+                printf("%c", (char)219);
+            }
+
+            // empty part
+            for (int i = filledPart; i < barLength; i++) {
+                printf(" ");
+            }
+
+            printf("] %4.2f%%", ratio * 100.00);
+        }
+    }
+
+    if (printProgressBar) {
+        if (!altTraining) {
+            printf("\nTraining completed\n");
+        }
+        else {
+            printf("\nTraining alted at generation %" PRIu64 ".\n",
+                   generationNumber);
+        }
+    }
+    return generationNumber;
 }

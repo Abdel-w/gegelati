@@ -62,7 +62,8 @@
 #include "learn/learningParameters.h"
 #include "learn/parallelLearningAgent.h"
 #include "learn/stickGameWithOpponent.h"
-
+#include "learn/classificationLearningAgent.h"
+#include "learn/fakeClassificationLearningEnvironment.h"
 
 class FLAgentTest : public ::testing::Test
 {
@@ -104,12 +105,20 @@ class FLAgentTest : public ::testing::Test
 
 TEST_F(FLAgentTest, Constructor)
 {
-    Learn::FLAgent* la;
-
-    ASSERT_NO_THROW(la = new Learn::FLAgent(le, set, params))
+    Learn::FLAgent<Learn::LearningAgent>* la;
+    // Build with Learn::LearningAgent
+    ASSERT_NO_THROW(la = new Learn::FLAgent<Learn::LearningAgent>(le, set, params))
         << "Construction of the learningAgent failed.";
 
     ASSERT_NO_THROW(delete la) << "Destruction of the LearningAgent failed.";
+
+    Learn::FLAgent<Learn::ClassificationLearningAgent<Learn::LearningAgent>>* cla;
+    FakeClassificationLearningEnvironment cle;
+    // Build with Learn::ClassificationLearningAgent
+    ASSERT_NO_THROW(cla = new Learn::FLAgent<Learn::ClassificationLearningAgent<Learn::LearningAgent>>(cle, set, params))
+        << "Construction of the learningAgent failed.";
+
+    ASSERT_NO_THROW(delete cla) << "Destruction of the LearningAgent failed.";
 }
 
 TEST_F(FLAgentTest, Train)
@@ -123,7 +132,7 @@ TEST_F(FLAgentTest, Train)
     params.nbGenerationPerAggregation =2;
 
     Learn::LearningAgent la1(le, set, params);
-    Learn::FLAgent la2(le, set, params);
+    Learn::FLAgent<Learn::LearningAgent> la2(le, set, params);
 
     la1.init();
     la2.init();

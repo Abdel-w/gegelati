@@ -85,7 +85,7 @@ namespace Learn {
          * learning process.
          */
         FLAgentManager(const int len,
-                        ClassificationLearningAgent& cle,
+                        ClassificationLearningEnvironment& cle,
                         const Instructions::Set& iSet,
                         const LearningParameters& p,
                         const TPG::TPGFactory& factory = TPG::TPGFactory()){

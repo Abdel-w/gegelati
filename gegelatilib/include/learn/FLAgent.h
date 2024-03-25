@@ -94,17 +94,17 @@ namespace Learn {
       /**
          * \brief Constructor for FLAgent for ClassificationLearningEnvironment.
          *
-         * \param[in] le The ClassificationLearningEnvironment for the TPG.
+         * \param[in] cle The ClassificationLearningEnvironment for the TPG.
          * \param[in] iSet Set of Instruction used to compose Programs in the
          *            learning process.
          * \param[in] p The LearningParameters for the LearningAgent.
          * \param[in] factory The TPGFactory used to create the TPGGraph. A
          * default TPGFactory is used if none is provided.
          */
-      FLAgent(ClassificationLearningEnvironment& le, const Instructions::Set& iSet,
+      FLAgent(ClassificationLearningEnvironment& cle, const Instructions::Set& iSet,
                      const LearningParameters& p,
                      const TPG::TPGFactory& factory = TPG::TPGFactory())
-            : BaseLearningAgent(le, iSet, p, factory)
+            : BaseLearningAgent(cle, iSet, p, factory)
       {
       }
         /**

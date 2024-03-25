@@ -8,6 +8,8 @@
 #include "learn/learningEnvironment.h"
 #include "learn/learningParameters.h"
 #include "learn/learningAgent.h"
+#include "learn/classificationLearningAgent.h"
+#include "learn/parallelLearningAgent.h"
 
 #include "tpg/tpgFactory.h"
 
@@ -66,10 +68,35 @@ namespace Learn {
                         //create nbAgents FLAgents 
                         for (int i = 0; i < nbAgents; i++)
                         {
-                            agents.push_back(new FLAgent(le,iSet,p,factory));
+                            agents.push_back(new FLAgent<BaseLearningAgent>(le,iSet,p,factory));
                         }        
         }
 
+        /**
+         * \brief Constructor for FLAgentManager.
+         *
+         * \param[in] cle The ClassificationLearningAgent for the TPG.
+         * \param[in] iSet Set of Instruction used to compose Programs in the
+         *            learning process.
+         * \param[in] p The LearningParameters for the LearningAgent.
+         * \param[in] factory The TPGFactory used to create the TPGGraph. A
+         * default TPGFactory is used if none is provided.
+         * \param[in] len The number of agents to be used in the Federated 
+         * learning process.
+         */
+        FLAgentManager(const int len,
+                        ClassificationLearningAgent& cle,
+                        const Instructions::Set& iSet,
+                        const LearningParameters& p,
+                        const TPG::TPGFactory& factory = TPG::TPGFactory()){
+                        // Make sure there is at least 2 agents
+                        nbAgents = (len < 2) ? 2 : len;
+                        //create nbAgents FLAgents 
+                        for (int i = 0; i < nbAgents; i++)
+                        {
+                            agents.push_back(new FLAgent<BaseLearningAgent>(cle,iSet,p,factory));
+                        }        
+        }
         /**
          * \brief Train both agents and exchange best branches
          *

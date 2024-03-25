@@ -62,7 +62,7 @@
 #include "learn/learningEnvironment.h"
 #include "learn/learningParameters.h"
 #include "learn/parallelLearningAgent.h"
-#include "learn/stickGameWithOpponent.h"
+#include "learn/FakeFederatedLearningEnvironement.h"
 
 #include "file/tpgGraphDotExporter.h"
 
@@ -70,19 +70,20 @@
 class trainFLAgentTest : public ::testing::Test
 {
   protected:
-    const size_t size1{24};
-    const size_t size2{32};
-    std::vector<std::reference_wrapper<const Data::DataHandler>> vect;// = le.getDataSources();
+
+    Learn::FakeFederatedLearningEnvironement* le;
+    std::vector<double> fakeData;
     Instructions::Set set;
     Environment* e = NULL;
+    std::vector<std::reference_wrapper<const Data::DataHandler>> vect;
     Learn::LearningParameters params;
 
     virtual void SetUp()
     {
-        vect.push_back(
-            *(new Data::PrimitiveTypeArray<double>((unsigned int)size1)));
-        vect.push_back(
-            *(new Data::PrimitiveTypeArray<float>((unsigned int)size2)));
+        fakeData.push_back(1.0);
+        fakeData.push_back(2.0);
+        fakeData.push_back(3.0);
+        fakeData.push_back(4.0);
 
         std::function<double(double, double)> minus = [](double a, double b) {
             return a - b;
@@ -92,7 +93,9 @@ class trainFLAgentTest : public ::testing::Test
         };
         set.add(*(new Instructions::LambdaInstruction<double, double>(minus)));
         set.add(*(new Instructions::LambdaInstruction<double, double>(plus)));
-
+                 
+        le = new Learn::FakeFederatedLearningEnvironement(2,fakeData);
+        vect = le->getDataSources();        
         e = new Environment(set, vect, 8, 5);
 
         params.mutation.tpg.maxInitOutgoingEdges = 1;
@@ -136,13 +139,13 @@ TEST_F(trainFLAgentTest, behavioralTest_FL)
     Program::Line& l0 = p0->addNewLine();
     Program::Line& l1 = p1->addNewLine();
 
-    // L1: Register 0 = Register {1,2} + DataSource_1{[4],[5]}
+    // L1: Register 0 = DataSource[1] + DataSource[0] =2+1
     l1.setDestinationIndex(0);
     l1.setOperand(0, 0, 1);
-    l1.setOperand(1, 1, 4);
-    l1.setInstructionIndex(1); // Lambda
+    l1.setOperand(1, 0, 0);
+    l1.setInstructionIndex(1); 
 
-    // L0: Register 0 = Datasource_1[1] - DataSource_1[2]
+    // L0: Register 0 = Datasource[3] - DataSource[2] = 4 - 3   
     l0.setDestinationIndex(0);
     l0.setOperand(0, 1, 1);
     l0.setOperand(1, 1, 2);
@@ -151,7 +154,7 @@ TEST_F(trainFLAgentTest, behavioralTest_FL)
     TPG::TPGGraph branch(*e); 
 
     auto root = &branch.addNewTeam();       //      0     0
-    auto team = &branch.addNewTeam();       //      |     |
+                                            //      |     |
     auto a0   = &branch.addNewAction(0);    //      `\   /'
     auto a1   = &branch.addNewAction(1);    //        \ /
     branch.addNewEdge(*root, *a0, p0);      //         0
@@ -159,20 +162,15 @@ TEST_F(trainFLAgentTest, behavioralTest_FL)
 
     ASSERT_EQ(branch.getNbVertices(), 3);
 
-    // Learn::FLAgent la(*e, set, params); // we can't convert form Environement to LearninEnvironement 
-  
-    // la.init();
+    Learn::FLAgent la(*le, set, params);  
+    la.init();
 
-    // bool alt = false;
+    bool alt = false;
+    
+    ASSERT_NO_THROW(la.train(alt, true))
+        << "Training a TPG for several generation should not fail.";
 
-    // ASSERT_NO_THROW(la.train(alt, true,root))
-    //     << "Training a TPG for several generation should not fail.";
-
-    /*File::TPGGraphDotExporter tpg(
-        "/home/abdrissi/Documents/tpgRes.dot",
-        *(la.getTPGGraph()));
-    tpg.print();*/
-    // alt = true;
-    // ASSERT_NO_THROW(la.train(alt, true,root))
-    //     << "Using the boolean reference to stop the training should not fail.";
+    alt = true;
+    ASSERT_NO_THROW(la.train(alt, true))
+        << "Using the boolean reference to stop the training should not fail.";
 }

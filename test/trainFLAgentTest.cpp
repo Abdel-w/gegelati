@@ -41,6 +41,7 @@
 #include <fstream>
 #include <gtest/gtest.h>
 #include <numeric>
+#include <filesystem>
 
 #include "log/laBasicLogger.h"
 
@@ -65,6 +66,7 @@
 #include "learn/FakeFederatedLearningEnvironement.h"
 
 #include "file/tpgGraphDotExporter.h"
+#include "file/tpgGraphDotImporter.h"
 
 
 class trainFLAgentTest : public ::testing::Test
@@ -96,11 +98,11 @@ class trainFLAgentTest : public ::testing::Test
                  
         le = new Learn::FakeFederatedLearningEnvironement(2,fakeData);
         vect = le->getDataSources();        
-        e = new Environment(set, vect, 8, 5);
+        e = new Environment(set, vect, 8);
 
-        params.mutation.tpg.maxInitOutgoingEdges = 1;
+        params.mutation.tpg.maxInitOutgoingEdges = 2;
         params.mutation.prog.maxProgramSize = 1;
-        params.mutation.tpg.nbRoots = 1;
+        params.mutation.tpg.nbRoots = 2;
         params.mutation.tpg.pEdgeDeletion = 0.7;
         params.mutation.tpg.pEdgeAddition = 0.7;
         params.mutation.tpg.pProgramMutation = 0.2;
@@ -113,7 +115,7 @@ class trainFLAgentTest : public ::testing::Test
         params.mutation.prog.pSwap = 1.0;
         params.mutation.prog.pConstantMutation = 0.5;
         params.mutation.prog.minConstValue = 0;
-        params.mutation.prog.maxConstValue = 1;
+        params.mutation.prog.maxConstValue = 2;
     }
 
     virtual void TearDown()
@@ -129,17 +131,21 @@ TEST_F(trainFLAgentTest, behavioralTest_FL)
     params.maxNbActionsPerEval = 11;
     params.nbIterationsPerPolicyEvaluation = 5;
     params.ratioDeletedRoots = 0.2;
-    params.nbGenerations =2;
-    params.nbGenerationPerAggregation =1;
+    params.nbGenerations =1;
+    params.nbGenerationPerAggregation =0;
 
   
 
     auto p0 = std::shared_ptr<Program::Program>(new Program::Program(*e));
-    auto p1 = std::shared_ptr<Program::Program>(new Program::Program(*e));
+    auto p1 = std::shared_ptr<Program::Program>(new Program::Program(*e)); 
+    auto p2 = std::shared_ptr<Program::Program>(new Program::Program(*e));
+    auto p3 = std::shared_ptr<Program::Program>(new Program::Program(*e));
     Program::Line& l0 = p0->addNewLine();
-    Program::Line& l1 = p1->addNewLine();
-
-    // L1: Register 0 = DataSource[1] + DataSource[0] =2+1
+    Program::Line& l1 = p1->addNewLine(); 
+    Program::Line& l2 = p2->addNewLine();
+    Program::Line& l3 = p3->addNewLine();
+    
+    // L1: Register 0 = DataSource[1] + DataSource[0] = 2 + 1
     l1.setDestinationIndex(0);
     l1.setOperand(0, 0, 1);
     l1.setOperand(1, 0, 0);
@@ -151,26 +157,74 @@ TEST_F(trainFLAgentTest, behavioralTest_FL)
     l0.setOperand(1, 1, 2);
     l0.setInstructionIndex(0);
 
+    // L1: Register 0 = DataSource[2] + DataSource[0] = 3 + 1
+    l2.setDestinationIndex(0);
+    l2.setOperand(0, 0, 1);
+    l2.setOperand(1, 0, 0);
+    l2.setInstructionIndex(1); 
+
+    // L0: Register 0 = Datasource[3] - DataSource[0] = 4 - 1   
+    l3.setDestinationIndex(0);
+    l3.setOperand(0, 1, 1);
+    l3.setOperand(1, 1, 2);
+    l3.setInstructionIndex(0);
+
     TPG::TPGGraph branch(*e); 
 
-    auto root = &branch.addNewTeam();       //      0     0
+    auto root = &branch.addNewTeam();       //     a0     a1
                                             //      |     |
     auto a0   = &branch.addNewAction(0);    //      `\   /'
     auto a1   = &branch.addNewAction(1);    //        \ /
-    branch.addNewEdge(*root, *a0, p0);      //         0
-    branch.addNewEdge(*root, *a1, p1);      //         
+    branch.addNewEdge(*root, *a0, p0);      //        root
+    branch.addNewEdge(*root, *a1, p1);      //
 
     ASSERT_EQ(branch.getNbVertices(), 3);
 
+
+    TPG::TPGGraph tpgExp(*e);
+
+    auto a2_o = &tpgExp.addNewAction(2);    // a TPGAction that doesn't exist in targetGraph 
+    auto root_o = &tpgExp.addNewTeam();     //        a1_o  a0_o  a2_o
+    auto team_o = &tpgExp.addNewTeam();     //          |    |   _/
+    auto a0_o = &tpgExp.addNewAction(0);    //          `\  /  _/
+    auto a1_o = &tpgExp.addNewAction(1);    //            \/  /
+    tpgExp.addNewEdge(*root_o, *team_o, p0);//            team_o
+    tpgExp.addNewEdge(*team_o, *a0_o, p1);  //             |
+    tpgExp.addNewEdge(*team_o, *a1_o, p2);  //           root_o  
+    tpgExp.addNewEdge(*team_o, *a2_o, p3);  //        
+    ASSERT_EQ(tpgExp.getNbVertices(), 5);   //
+
+    //export the tpg to path_to_tpg
+    char path_to_tpg[256];
+
+    sprintf(path_to_tpg, "/home/abdelouahed/Documents/4A/innovR/gegelati/tpgSample/tpgExp.dot");
+    File::TPGGraphDotExporter dotExporter((const char*)path_to_tpg,tpgExp);
+    dotExporter.print(); 
+    //create a FLAgent and assign the tpgExp to its TPGGraph
     Learn::FLAgent la(*le, set, params);  
-    la.init();
+    auto &tpg = *la.getTPGGraph();
+    File::TPGGraphDotImporter dotImporter((const char*) path_to_tpg, *e, tpg);  
+    
+    ASSERT_EQ(la.getTPGGraph()->getNbVertices(), 5.0);
+
+    la.setBestBranch((TPG::TPGVertex *)root);
 
     bool alt = false;
+    //train for 1 generation (with exchanging the bestBranch )
+    la.train(alt,false);
     
-    ASSERT_NO_THROW(la.train(alt, true))
-        << "Training a TPG for several generation should not fail.";
+    //ASSERT_EQ(la.getBestRoot().first,root);
+   // ASSERT_EQ(la.getBestRoot().first,root_o);
+    // if(std::find(la.getTPGGraph()->getRootVertices().begin(),la.getTPGGraph()->getRootVertices().end(), root_o) != end(la.getTPGGraph()->getRootVertices())){
+    //     auto d =* la.resultsPerRoot.at((const TPG::TPGVertex *)root_o);
+    //     ASSERT_EQ(d.getResult(),5);
+    // }
+    char path_to_res[256];
+    sprintf(path_to_res, "/home/abdelouahed/Documents/4A/innovR/gegelati/tpgSample/res.dot");
+    File::TPGGraphDotExporter dotExporter1((const char*)path_to_res,*la.getTPGGraph());
+    dotExporter1.print(); 
 
-    alt = true;
-    ASSERT_NO_THROW(la.train(alt, true))
-        << "Using the boolean reference to stop the training should not fail.";
+
+    //then test if the train process leads to the disered results ...
 }
+

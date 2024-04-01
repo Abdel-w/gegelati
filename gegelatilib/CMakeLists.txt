@@ -124,7 +124,7 @@ if(MSVC)
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 --coverage -fprofile-arcs -ftest-coverage")
 endif()
-
+set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 # Doc installation
 if(WIN32)
  install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include" # source directory

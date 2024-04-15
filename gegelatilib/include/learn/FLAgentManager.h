@@ -32,7 +32,7 @@ namespace Learn {
         std::vector<FLAgent<BaseLearningAgent>*> agents;
         /// connections between agents
         std::unordered_map<FLAgent<BaseLearningAgent>*, std::unordered_set<FLAgent<BaseLearningAgent>*>> agentConnections;
-    protected:
+    public:
         /**
          * \brief Connects two FLAgents.
          *

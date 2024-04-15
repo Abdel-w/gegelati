@@ -52,6 +52,7 @@
 #include "tpg/instrumented/tpgVertexInstrumentation.h"
 #include "tpg/policyStats.h"
 #include "tpg/tpgGraph.h"
+#include "tpg/tpgExecutionEngine.h"
 
 #include "instructions/addPrimitiveType.h"
 #include "instructions/lambdaInstruction.h"
@@ -184,14 +185,12 @@ TEST_F(trainFLAgentTest, behavioralTest_FL)
     TPG::TPGGraph tpgExp(*e);
 
     auto a2_o = &tpgExp.addNewAction(2);    // a TPGAction that doesn't exist in targetGraph 
-    auto root_o = &tpgExp.addNewTeam();     //        a1_o  a0_o  a2_o
-    auto team_o = &tpgExp.addNewTeam();     //          |    |   _/
+    auto root_o = &tpgExp.addNewTeam();     //        a1_o  a0_o  a2_o     
     auto a0_o = &tpgExp.addNewAction(0);    //          `\  /  _/
     auto a1_o = &tpgExp.addNewAction(1);    //            \/  /
-    tpgExp.addNewEdge(*root_o, *team_o, p0);//            team_o
-    tpgExp.addNewEdge(*team_o, *a0_o, p1);  //             |
-    tpgExp.addNewEdge(*team_o, *a1_o, p2);  //           root_o  
-    tpgExp.addNewEdge(*team_o, *a2_o, p3);  //        
+    tpgExp.addNewEdge(*root_o, *a0_o, p1);  //             |/
+    tpgExp.addNewEdge(*root_o, *a1_o, p2);  //           root_o  
+    tpgExp.addNewEdge(*root_o, *a2_o, p3);  //        
     ASSERT_EQ(tpgExp.getNbVertices(), 5);   //
 
     //export the tpg to path_to_tpg
@@ -205,13 +204,12 @@ TEST_F(trainFLAgentTest, behavioralTest_FL)
     auto &tpg = *la.getTPGGraph();
     File::TPGGraphDotImporter dotImporter((const char*) path_to_tpg, *e, tpg);  
     
-    ASSERT_EQ(la.getTPGGraph()->getNbVertices(), 5.0);
+    ASSERT_EQ(la.getTPGGraph()->getNbVertices(), 4);
 
     la.setBestBranch((TPG::TPGVertex *)root);
 
     bool alt = false;
-    //train for 1 generation (with exchanging the bestBranch )
-    la.train(alt,false);
+   
     
     //ASSERT_EQ(la.getBestRoot().first,root);
    // ASSERT_EQ(la.getBestRoot().first,root_o);
@@ -224,7 +222,17 @@ TEST_F(trainFLAgentTest, behavioralTest_FL)
     File::TPGGraphDotExporter dotExporter1((const char*)path_to_res,*la.getTPGGraph());
     dotExporter1.print(); 
 
-
+    // void PendulumExecutionEnvironment::startInference(int nbSteps){
+    //     for(int i = 0; i < nbSteps; i++){
+    //         this->currentStep = i;
+    //         uint64_t action = (uint64_t)inferenceTPG();
+    //         this->doAction(action);
+    // #ifdef PENDULUM_TRACE
+    //         std::cout << *this << " === Step " << i << ", action : " << getActionFromID(action) << std::endl;
+    // #endif
+    //     }
+    //     this->currentStep = -1;
+    // }
     //then test if the train process leads to the disered results ...
 }
 

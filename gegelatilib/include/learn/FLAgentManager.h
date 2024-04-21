@@ -121,7 +121,7 @@ namespace Learn {
          * - Each agent has at least one receiving connection.
          * - No agent has more than "maxNbOfConnections" in both directions.
          */
-        void connectAgentsPseudoRandomly(); 
+        void connectAgentsPseudoRandomly(uint64_t seed = 0); 
 
         /**
          * \brief Exchange the best branch among all FLAgents in the FLAgentManager.
@@ -202,9 +202,9 @@ uint64_t Learn::FLAgentManager<BaseLearningAgent>::trainAndExchangeBestBranches(
 }
 
 template <class BaseLearningAgent>
-void Learn::FLAgentManager<BaseLearningAgent>::connectAgentsPseudoRandomly()
+void Learn::FLAgentManager<BaseLearningAgent>::connectAgentsPseudoRandomly(uint64_t seed)
 {
-    Mutator::RNG rng;
+    Mutator::RNG rng(seed);
 
     for (FLAgent<BaseLearningAgent>* agent : this->agents) {
         // Ensure each agent has at least one receiving connection

@@ -230,6 +230,8 @@ void Learn::FLAgentManager<BaseLearningAgent>::connectAgentsPseudoRandomly(uint6
                 this->connectAgents(agent, targetAgent,true);
             }          
         }
+        //change the seed of rng
+        rng.setSeed(rng.getUnsignedInt64(0, this->nbAgents));
     }
 }
 
